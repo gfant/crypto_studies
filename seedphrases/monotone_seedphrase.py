@@ -6,28 +6,29 @@ size = 12
 
 def monotone_seedphrase(words = 12):
     candidates = []
-    checksum_size = words // 3
-    bit_size = mnemonic_length[words]
-    bytes_size = int(bit_size/8)
+    size_checksum = words // 3
+    size_bit = mnemonic_length[words]
+    size_byte = int(size_bit/8)
 
     for value in range(2048):
-        binary = bin(value)[2:].zfill(11)
-        entropy_checksum = binary*words
-        separator = len(entropy_checksum) - checksum_size
-        checksum = entropy_checksum[separator:]
-        entropy = entropy_checksum[:separator]
-        candidates.append([entropy,checksum, value])
+        value_bin = bin(value)[2:].zfill(11)
+
+        entropy_checksum = value_bin*words
+        checksum = entropy_checksum[ len(entropy_checksum) - size_checksum : ]
+        entropy = entropy_checksum[ : len(entropy_checksum) - size_checksum ]
+        
+        candidates.append([ entropy, checksum, value])
 
     possible_solutions = []
     for candidate in candidates:
-        entropy,checksum,value = candidate
+        entropy, checksum, value = candidate
         entropy_int = int(entropy,2) # Integer of candidate entropy
-        entropy_bytes = entropy_int.to_bytes(bytes_size,"big") # bytes of entropy
-        HASH = hashlib.sha256(entropy_bytes).digest() # Digest of Hash
-        HASH_int = int.from_bytes(HASH,"big") # Number of hashing
-        HASH_binary = bin(HASH_int)[2:].zfill(256) # Binary of hashing the candidate entropy
-        CHECKSUM = HASH_binary[:checksum_size] # Getting Checksum
-        if CHECKSUM == checksum:
+        entropy_byte = entropy_int.to_bytes(size_byte,"big") # bytes of entropy
+        entropy_hash = hashlib.sha256(entropy_byte).digest() # Digest of Hash
+        entropy_hash_int = int.from_bytes(entropy_hash,"big") # Number of hashing
+        entropy_hash_bin = bin(entropy_hash_int)[2:].zfill(256) # Binary of hashing the candidate entropy
+        checksum_candidate = entropy_hash_bin[:size_checksum] # Getting Checksum
+        if checksum_candidate == checksum:
             valid_word = word_list[value]
             possible_solutions.append(valid_word) 
 

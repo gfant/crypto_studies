@@ -11,38 +11,38 @@ def seedphrase_generator(size = 12):
         raise ValueError("Invalid size")
     
     # Get number of bits
-    bit_size = mnemonic_length[size]
+    size_bit = mnemonic_length[size]
 
 
     # Generate bits randomly and secretly
-    ENT_int = secrets.randbits(bit_size)
+    entropy_int = secrets.randbits(size_bit)
 
     # Calculate the number of bits of the entropy to split it properly
-    ENT_bytes = int(bit_size/8)
+    entropy_byte = int(size_bit/8)
 
     # Entropy is made bytes to make it manageble for sha256 later
-    ENT = ENT_int.to_bytes(ENT_bytes,"big")
+    entropy = entropy_int.to_bytes(entropy_byte,"big")
 
     # Number of bits of the checksum
-    CHECKSUM_size = bit_size // 32
+    checksum_size = size_bit // 32
 
     # Digest is a way to call the result in bytes. It's the hash itself
     # If you try to output without digest it won't work
     # SHA256 throws a bytes object, so you need a number 
-    HASH = hashlib.sha256(ENT).digest()
+    entropy_hash = hashlib.sha256(entropy).digest()
 
     # We get the bites to get the checksum bytes we need to finish our seedphrase
-    HASH_int = int.from_bytes(HASH, "big")
-    CHECKSUM_binary = bin(HASH_int)[2:].zfill(256)
+    entropy_hash_int = int.from_bytes(entropy_hash, "big")
+    checksum_bin = bin(entropy_hash_int)[2:].zfill(256)
 
-    CHECKSUM = CHECKSUM_binary[:CHECKSUM_size]
+    checksum = checksum_bin[:checksum_size]
 
-    ENT_bin = bin(ENT_int)[2:]
-    binary = (ENT_bin + CHECKSUM).zfill(bit_size + CHECKSUM_size)
+    entropy_bin = bin(entropy_int)[2:]
+    entropy_full_bin = (entropy_bin + checksum).zfill(size_bit + checksum_size)
 
     wordsIndices = []
-    for index in range(0, len(binary), 11):
-        wordsIndices.append(binary[index : index + 11])
+    for index in range(0, len(entropy_full_bin), 11):
+        wordsIndices.append(entropy_full_bin[index : index + 11])
     
     seedphrase = []
     for index in wordsIndices:
