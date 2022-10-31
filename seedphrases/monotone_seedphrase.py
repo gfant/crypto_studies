@@ -35,7 +35,7 @@ def monotone_seedphrase(words = 12):
 
 solutions = monotone_seedphrase(size)
 
-print("The current words are useful to generate valid seedphrases of size {size} with only one word:")
+print(f"The current words are useful to generate valid seedphrases of size {size} with only one word:")
 for index in range(len(solutions)):
     word = solutions[index]
     print(f"{index+1}:\t{word}")
