@@ -1,4 +1,4 @@
-import hashlib
+from hashlib import sha256
 from constants import word_list, mnemonic_length
 
 # Edit the variable below this line
@@ -24,7 +24,7 @@ def monotone_seedphrase(words = 12):
         entropy, checksum, value = candidate
         entropy_int = int(entropy,2) # Integer of candidate entropy
         entropy_byte = entropy_int.to_bytes(size_byte,"big") # bytes of entropy
-        entropy_hash = hashlib.sha256(entropy_byte).digest() # Digest of Hash
+        entropy_hash = sha256(entropy_byte).digest() # Digest of Hash
         entropy_hash_int = int.from_bytes(entropy_hash,"big") # Number of hashing
         entropy_hash_bin = bin(entropy_hash_int)[2:].zfill(256) # Binary of hashing the candidate entropy
         checksum_candidate = entropy_hash_bin[:size_checksum] # Getting Checksum

@@ -1,21 +1,26 @@
 import hashlib
 from constants import word_list, mnemonic_length
 from hashlib import sha256
-import secrets
+from random import randint
 
 # Edit the variable below this line
-size = 18
+size = 24
+
+def randbits(size) -> int:
+    value = 0
+    for _ in range(size):
+        value <<= 1
+        value += randint(0,1)
+    return value
 
 def seedphrase_generator(size = 12):
-    if size not in mnemonic_length:
-        raise ValueError("Invalid size")
+    verify_size(size)
     
     # Get number of bits
     size_bit = mnemonic_length[size]
 
-
     # Generate bits randomly and secretly
-    entropy_int = secrets.randbits(size_bit)
+    entropy_int = randbits(size_bit)
 
     # Calculate the number of bits of the entropy to split it properly
     entropy_byte = int(size_bit/8)
@@ -52,5 +57,17 @@ def seedphrase_generator(size = 12):
 
     return(' '.join(seedphrase))
 
+def checkIsNumber(size):
+    if not size.isdigit() or size == "" or size[0] == "0":
+        raise ValueError("Invalid size")
+    return int(size)
 
-print(seedphrase_generator(size))
+def verify_size(size):
+    if int(size) not in mnemonic_length:
+        raise ValueError("Invalid size")
+
+if __name__ == "__main__":
+    size = input("Seedphrase size\n")
+    size = checkIsNumber(size)
+    output = seedphrase_generator(size)
+    print(output)
